@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 bootloader = { version = "=0.9"}
+vga_buffer_driver = { version = "0.1", git = "https://github.com/lilith-os/vga_buffer_driver" }
 
 [profile.dev]
 panic = "abort"

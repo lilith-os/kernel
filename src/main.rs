@@ -2,17 +2,14 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+use vga_buffer_driver::prelude::Writer;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    let vga_buffer = 0xb8000 as *mut u8;
-
-    for (i, &byte) in b"Hello, World!".iter().enumerate() {
-        unsafe {
-            vga_buffer.offset(i as isize * 2).write(byte);
-            vga_buffer.offset(i as isize * 2 + 1).write(0xff);
-        }
-    }
+    
+    let mut writer = Writer::default();
+    
+    writer.write_string("Hello, world!\n");
 
     #[allow(clippy::empty_loop)]
     loop {}
