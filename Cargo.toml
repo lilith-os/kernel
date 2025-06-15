@@ -16,6 +16,7 @@ lazy_static = {version = "1.5.0", features = ["spin_no_std"]}
 spin = "0.10.0"
 qemu_bindings = { git = "https://github.com/lilith-os/qemu_bindings.git", version = "0.1.0" }
 uart_16550_driver = { git = "https://github.com/lilith-os/uart_16550_driver.git", version = "0.1.0" }
+thiserror-no-std = "2.0.2"
 
 [package.metadata.bootimage]
 test-args = [

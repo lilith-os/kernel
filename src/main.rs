@@ -20,11 +20,11 @@ pub extern "C" fn _start() -> ! {
 
 #[cfg(test)]
 mod test {
-    use uart_16550_driver::serial_println;
+    use kenel_lib::println;
 
     #[test_case]
     fn bin_test() {
-        serial_println!("hello world!");
+        println!("hello world!");
         panic!("Oops!");
     }
 }
