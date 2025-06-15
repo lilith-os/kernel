@@ -2,7 +2,7 @@
 
 use core::default::Default;
 mod vga_writer;
-mod print;
+pub mod print;
 
 pub struct Kernel {}
 
@@ -19,7 +19,7 @@ impl Kernel {
     
     pub fn run(self) -> ! {
         println!("Running...");
-        
+        panic!("Something went wrong");
         #[allow(clippy::empty_loop)]
         loop {}
     }

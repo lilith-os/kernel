@@ -2,7 +2,7 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use kenel_lib::Kernel;
+use kenel_lib::{println, Kernel};
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
@@ -11,5 +11,6 @@ pub extern "C" fn _start() -> ! {
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    println!("{}", _info);
     loop {}
 }
