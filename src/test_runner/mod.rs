@@ -21,3 +21,13 @@ where T: Fn() {
         serial_println!("[ok]");
     }
 }
+
+#[macro_export]
+macro_rules! init_test_entry {
+    () => {
+        #[unsafe(no_mangle)]
+        pub extern "C" fn _start() -> ! {
+            kernel_lib::kernel::Kernel::new().run_tests(test_main)
+        }
+    };
+}

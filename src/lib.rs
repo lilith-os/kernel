@@ -4,8 +4,6 @@
 #![test_runner(crate::test_runner::runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use crate::error::Error;
-
 mod vga_writer;
 pub mod print;
 pub mod kernel;
@@ -13,10 +11,10 @@ pub mod test_runner;
 pub mod panic_handler;
 pub mod error;
 
-#[unsafe(no_mangle)]
 #[cfg(test)]
+#[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    kernel::Kernel::new().run_tests(test_main)
+   kernel::Kernel::new().run_tests(test_main)
 }
 
 #[test_case]
