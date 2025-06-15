@@ -1,26 +1,22 @@
 #![no_std]
+#![no_main]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner::runner)]
+#![reexport_test_harness_main = "test_main"]
 
-use core::default::Default;
 mod vga_writer;
 pub mod print;
+pub mod kernel;
+pub mod test_runner;
+pub mod panic_handler;
 
-pub struct Kernel {}
-
-impl Default for Kernel {
-    fn default() -> Self {
-        Self::new()
-    }
+#[unsafe(no_mangle)]
+#[cfg(test)]
+pub extern "C" fn _start() -> ! {
+    kernel::Kernel::new().run_tests(test_main)
 }
 
-impl Kernel {
-    pub fn new() -> Self {
-        Self { }
-    }
-    
-    pub fn run(self) -> ! {
-        println!("Running...");
-        panic!("Something went wrong");
-        #[allow(clippy::empty_loop)]
-        loop {}
-    }
+#[test_case]
+fn lib_test() {
+    println!("bye world!");
 }
