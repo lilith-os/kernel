@@ -8,7 +8,7 @@ name = "kenel_lib"
 
 [dependencies]
 bootloader = { version = "=0.9"}
-vga_buffer_driver = { version = "0.1.8", git = "https://github.com/lilith-os/vga_buffer_driver", features = ["no_std"] }
+vga_buffer_driver = { version = "0.1.9", git = "https://github.com/lilith-os/vga_buffer_driver", features = ["no_std"] }
 
 [profile.dev]
 panic = "abort"
