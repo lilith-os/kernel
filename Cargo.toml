@@ -3,9 +3,12 @@ name = "kernel"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "kenel_lib"
+
 [dependencies]
 bootloader = { version = "=0.9"}
-vga_buffer_driver = { version = "0.1", git = "https://github.com/lilith-os/vga_buffer_driver" }
+vga_buffer_driver = { version = "0.1.8", git = "https://github.com/lilith-os/vga_buffer_driver", features = ["no_std"] }
 
 [profile.dev]
 panic = "abort"

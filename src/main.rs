@@ -2,17 +2,11 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use vga_buffer_driver::prelude::Writer;
+use kenel_lib::Kernel;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    
-    let mut writer = Writer::default();
-    
-    writer.write_string("Hello, world!\n");
-
-    #[allow(clippy::empty_loop)]
-    loop {}
+    Kernel::new().run()
 }
 
 #[panic_handler]
