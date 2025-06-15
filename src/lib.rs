@@ -1,12 +1,10 @@
 #![no_std]
 
 use core::default::Default;
-use vga_buffer_driver::prelude::VGAWriter;
-use core::fmt::Write;
+mod vga_writer;
+mod print;
 
-pub struct Kernel {
-    vga_writer: VGAWriter,
-}
+pub struct Kernel {}
 
 impl Default for Kernel {
     fn default() -> Self {
@@ -16,11 +14,11 @@ impl Default for Kernel {
 
 impl Kernel {
     pub fn new() -> Self {
-        Self { vga_writer: Default::default() }
+        Self { }
     }
     
-    pub fn run(mut self) -> ! {
-        write!(self.vga_writer, "Hello, world!").unwrap();
+    pub fn run(self) -> ! {
+        println!("Running...");
         
         #[allow(clippy::empty_loop)]
         loop {}
