@@ -4,9 +4,7 @@
 #![test_runner(kenel_lib::test_runner::runner)]
 #![reexport_test_harness_main = "test_main"]
 
-
 use kenel_lib::kernel::Kernel;
-use kenel_lib::println;
 
 #[cfg(not(test))]
 #[unsafe(no_mangle)]
@@ -20,7 +18,13 @@ pub extern "C" fn _start() -> ! {
     Kernel::new().run_tests(test_main)
 }
 
-#[test_case]
-fn bin_test() {
-    println!("hello world!");
+#[cfg(test)]
+mod test {
+    use uart_16550_driver::serial_println;
+
+    #[test_case]
+    fn bin_test() {
+        serial_println!("hello world!");
+        panic!("Oops!");
+    }
 }

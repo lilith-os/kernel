@@ -1,3 +1,4 @@
+use crate::println;
 
 pub struct Kernel {}
 
@@ -13,8 +14,7 @@ impl Kernel {
     }
 
     pub fn run(self) -> ! {
-        crate::println!("Running...");
-        panic!("Something went wrong");
+        println!("Running...");
         #[allow(clippy::empty_loop)]
         loop {}
     }

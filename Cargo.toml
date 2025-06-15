@@ -6,8 +6,22 @@ edition = "2024"
 [lib]
 name = "kenel_lib"
 
+[features]
+test = []
+
 [dependencies]
 bootloader = { version = "=0.9"}
 vga_buffer_driver = { version = "0.1.11", git = "https://github.com/lilith-os/vga_buffer_driver", features = ["no_std"] }
 lazy_static = {version = "1.5.0", features = ["spin_no_std"]}
 spin = "0.10.0"
+qemu_bindings = { git = "https://github.com/lilith-os/qemu_bindings.git", version = "0.1.0" }
+uart_16550_driver = { git = "https://github.com/lilith-os/uart_16550_driver.git", version = "0.1.0" }
+
+[package.metadata.bootimage]
+test-args = [
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    "-serial", "stdio",
+    "-display", "none"
+]
+test-success-exit-code = 33
+test-timeout = 300
