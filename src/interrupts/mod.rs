@@ -1,6 +1,3 @@
-use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
-use crate::println;
-
 pub mod idt;
 mod handlers;
 

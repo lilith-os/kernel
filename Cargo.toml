@@ -6,8 +6,19 @@ edition = "2024"
 [lib]
 name = "kernel_lib"
 
+[[test]]
+name = "basic_boot"
+harness = false
+
+[[test]]
+name = 'stack_overflow'
+harness = false
+required-features = ['should_fall']
+
+
 [features]
 test = []
+should_fall = []
 
 [dependencies]
 bootloader = { version = "=0.9"}

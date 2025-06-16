@@ -12,6 +12,7 @@ pub mod test_runner;
 pub mod panic_handler;
 pub mod error;
 mod interrupts;
+mod gdt;
 
 #[cfg(all(feature = "test", test))]
 #[unsafe(no_mangle)]

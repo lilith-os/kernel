@@ -10,7 +10,7 @@ mod base_panic_handler {
     }
 }
 
-#[cfg(feature = "test")]
+#[cfg(all(feature = "test", not(feature = "should_fall")))]
 mod test_panic_handler {
     use core::panic::PanicInfo;
     use qemu_bindings::exit::{exit_qemu, QemuExitCode};
@@ -24,3 +24,18 @@ mod test_panic_handler {
         loop {}
     }
 }
+
+#[cfg(all(feature = "test", feature = "should_fall"))]
+mod test_panic_handler {
+    use core::panic::PanicInfo;
+    use qemu_bindings::exit::{exit_qemu, QemuExitCode};
+    use uart_16550_driver::serial_println;
+
+    #[panic_handler]
+    fn panic(_info: &PanicInfo) -> ! {
+        serial_println!("[ok]\n");
+        exit_qemu(QemuExitCode::Success);
+        loop {}
+    }
+}
+
