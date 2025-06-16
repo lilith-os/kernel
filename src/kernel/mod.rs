@@ -1,3 +1,4 @@
+use crate::interrupts::idt::init_idt;
 use crate::println;
 
 pub struct Kernel {}
@@ -13,9 +14,16 @@ impl Kernel {
         Self { }
     }
 
+    pub fn init(self) -> Self {
+        init_idt();
+        self
+    }
+    
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
         println!("Running...");
+        x86_64::instructions::interrupts::int3();
+        println!("Done!");
         #[allow(clippy::empty_loop)]
         loop {}
     }

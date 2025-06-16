@@ -9,7 +9,9 @@ use kernel_lib::kernel::Kernel;
 #[cfg(not(feature = "test"))]
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    Kernel::new().run()
+    Kernel::new()
+        .init()
+        .run()
 }
 
 #[cfg(all(feature = "test", test))]
