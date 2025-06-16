@@ -6,13 +6,13 @@
 
 use kernel_lib::kernel::Kernel;
 
-#[cfg(not(test))]
+#[cfg(not(feature = "test"))]
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
     Kernel::new().run()
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "test", test))]
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
     Kernel::new().run_tests(test_main)

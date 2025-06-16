@@ -25,6 +25,7 @@ where T: Fn() {
 #[macro_export]
 macro_rules! init_test_entry {
     () => {
+        #[cfg(all(feature = "test", test))]
         #[unsafe(no_mangle)]
         pub extern "C" fn _start() -> ! {
             kernel_lib::kernel::Kernel::new().run_tests(test_main)

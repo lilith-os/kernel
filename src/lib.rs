@@ -11,7 +11,7 @@ pub mod test_runner;
 pub mod panic_handler;
 pub mod error;
 
-#[cfg(test)]
+#[cfg(all(feature = "test", test))]
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
    kernel::Kernel::new().run_tests(test_main)

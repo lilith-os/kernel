@@ -13,12 +13,14 @@ impl Kernel {
         Self { }
     }
 
+    #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
         println!("Running...");
         #[allow(clippy::empty_loop)]
         loop {}
     }
     
+    #[cfg(feature = "test")]
     pub fn run_tests(self, test_main: impl Fn()) -> ! {
         test_main();
         #[allow(clippy::empty_loop)]
