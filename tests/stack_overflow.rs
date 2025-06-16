@@ -2,6 +2,7 @@
 #![no_main]
 
 use qemu_bindings::exit::{exit_qemu, QemuExitCode};
+use volatile::Volatile;
 use kernel_lib::{init_test_entry};
 
 init_test_entry!();
@@ -17,4 +18,5 @@ fn test_main() {
 #[allow(unconditional_recursion)]
 fn stack_overflow() {
     stack_overflow();
+    Volatile::new(0).read();
 }
