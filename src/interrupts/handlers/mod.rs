@@ -37,11 +37,13 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: Interrupt
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
             match key {
-                DecodedKey::RawKey(key) => print!("{:?}", key),
+                DecodedKey::RawKey(_) => { },
                 DecodedKey::Unicode(ch) => print!("{}", ch),
             }
         }
     }
+    
+    drop(keyboard);
 
     unsafe {
         PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());

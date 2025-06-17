@@ -20,19 +20,16 @@ impl Kernel {
     }
 
     pub fn init(self) -> Self {
-        println!("[kernel]...");
+        println!("[kernel init]...");
         debug_call!(idt::init_idt);
         debug_call!(gdt::init_gdt);
         debug_call!(pic::init_pics);
-        println!("[kernel] done\n");
+        println!("[kernel init] done\n");
         self
     }
     
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
-        println!("Running...");
-        
-        println!("Done!");
         #[allow(clippy::empty_loop)]
         loop {
             x86_64::instructions::hlt();
