@@ -1,7 +1,8 @@
 use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 use crate::gdt::DOUBLE_FAULT_IST_INDEX;
-use crate::interrupts::handlers::{breakpoint_handler, double_fault};
+use crate::interrupts::handlers::{breakpoint_handler, double_fault, timer_interrupt_handler};
+use crate::interrupts::pic::hardware_interrupts::InterruptIndex;
 
 lazy_static!{
     static ref IDT: InterruptDescriptorTable = {
@@ -13,6 +14,9 @@ lazy_static!{
                 .set_handler_fn(double_fault)
                 .set_stack_index(DOUBLE_FAULT_IST_INDEX);
         }
+
+        idt[InterruptIndex::Timer.as_u8()]
+            .set_handler_fn(timer_interrupt_handler);
         
         idt
     };

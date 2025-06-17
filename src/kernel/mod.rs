@@ -1,6 +1,10 @@
 #[allow(unused)]
 use crate::{gdt, println};
-use crate::interrupts::idt;
+use crate::interrupts::{idt, pic};
+use crate::interrupts::pic::PICS;
+use crate::{debug_call, print};
+
+mod debug;
 
 pub struct Kernel {}
 
@@ -16,30 +20,31 @@ impl Kernel {
     }
 
     pub fn init(self) -> Self {
-        idt::init_idt();
-        gdt::init_gdt();
+        println!("[kernel]...");
+        debug_call!(idt::init_idt);
+        debug_call!(gdt::init_gdt);
+        debug_call!(pic::init_pics);
+        println!("[kernel] done\n");
         self
     }
     
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
         println!("Running...");
-
-        fn stack_overflow() {
-            stack_overflow();
-        }
-        
-        stack_overflow();
         
         println!("Done!");
         #[allow(clippy::empty_loop)]
-        loop {}
+        loop {
+            x86_64::instructions::hlt();
+        }
     }
     
     #[cfg(feature = "test")]
     pub fn run_tests(self, test_main: impl Fn()) -> ! {
         test_main();
         #[allow(clippy::empty_loop)]
-        loop {}
+        loop {
+            x86_64::instructions::hlt();
+        }
     }
 }

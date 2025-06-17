@@ -1,4 +1,5 @@
 pub mod idt;
+pub mod pic;
 mod handlers;
 
 #[cfg(test)]
