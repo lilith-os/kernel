@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 use crate::gdt::DOUBLE_FAULT_IST_INDEX;
-use crate::interrupts::handlers::{breakpoint_handler, double_fault, timer_interrupt_handler};
+use crate::interrupts::handlers::{breakpoint_handler, double_fault, keyboard_interrupt_handler, timer_interrupt_handler};
 use crate::interrupts::pic::hardware_interrupts::InterruptIndex;
 
 lazy_static!{
@@ -17,6 +17,9 @@ lazy_static!{
 
         idt[InterruptIndex::Timer.as_u8()]
             .set_handler_fn(timer_interrupt_handler);
+        
+        idt[InterruptIndex::Keyboard.as_u8()]
+            .set_handler_fn(keyboard_interrupt_handler);
         
         idt
     };
