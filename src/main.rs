@@ -4,20 +4,26 @@
 #![test_runner(kernel_lib::test_runner::runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{entry_point, BootInfo};
 use kernel_lib::kernel::Kernel;
 
 #[cfg(not(feature = "test"))]
-#[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
-    Kernel::new()
+entry_point!(kernel_entry);
+
+#[cfg(not(feature = "test"))]
+fn kernel_entry(boot_info: &'static BootInfo) -> ! {
+    Kernel::new(boot_info)
         .init()
         .run()
 }
 
 #[cfg(all(feature = "test", test))]
-#[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
-    Kernel::new().run_tests(test_main)
+entry_point!(test_kernel_entry);
+#[cfg(all(feature = "test", test))]
+fn test_kernel_entry(boot_info: &'static BootInfo) -> ! {
+    Kernel::new(boot_info)
+        .init()
+        .run_tests(test_main)
 }
 
 #[cfg(test)]

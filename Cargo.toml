@@ -21,7 +21,7 @@ test = []
 should_fall = []
 
 [dependencies]
-bootloader = { version = "=0.9"}
+bootloader = { version = "=0.9", features = ["map_physical_memory"]}
 vga_buffer_driver = { version = "0.1.11", git = "https://github.com/lilith-os/vga_buffer_driver", features = ["no_std"] }
 lazy_static = {version = "1.5.0", features = ["spin_no_std"]}
 spin = "0.10.0"

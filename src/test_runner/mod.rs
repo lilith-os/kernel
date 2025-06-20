@@ -1,6 +1,9 @@
 use qemu_bindings::exit::{exit_qemu, QemuExitCode};
 use uart_16550_driver::{serial_print, serial_println};
 
+pub use bootloader::entry_point;
+pub use bootloader::BootInfo;
+
 pub fn runner(tests: &[&dyn Testable]) {
     serial_println!("Running {} tests", tests.len());
     for test in tests {
@@ -26,9 +29,11 @@ where T: Fn() {
 macro_rules! init_test_entry {
     () => {
         #[cfg(all(feature = "test", test))]
-        #[unsafe(no_mangle)]
-        pub extern "C" fn _start() -> ! {
-            kernel_lib::kernel::Kernel::new()
+        kernel_lib::test_runner::entry_point!(kernel_test_main);
+        
+        #[cfg(all(feature = "test", test))]
+        fn kernel_test_main(boot_info: &'static kernel_lib::test_runner::BootInfo) -> ! {
+            kernel_lib::kernel::Kernel::new(boot_info)
                 .init()
                 .run_tests(test_main)
         }

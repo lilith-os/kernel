@@ -15,9 +15,11 @@ mod interrupts;
 mod gdt;
 
 #[cfg(all(feature = "test", test))]
-#[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
-   kernel::Kernel::new()
-       .init()
-       .run_tests(test_main)
+crate::test_runner::entry_point!(kernel_test_main);
+
+#[cfg(all(feature = "test", test))]
+fn kernel_test_main(boot_info: &'static crate::test_runner::BootInfo) -> ! {
+    kernel::Kernel::new(boot_info)
+        .init()
+        .run_tests(test_main)
 }

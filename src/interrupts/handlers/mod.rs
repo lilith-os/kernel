@@ -3,7 +3,8 @@ use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 use pc_keyboard::layouts::Us104Key;
 use spin::Mutex;
 use x86_64::instructions::port::Port;
-use x86_64::structures::idt::InterruptStackFrame;
+use x86_64::registers::control::Cr2;
+use x86_64::structures::idt::{InterruptStackFrame, PageFaultErrorCode};
 use crate::{print, println};
 use crate::interrupts::pic::hardware_interrupts::InterruptIndex;
 use crate::interrupts::pic::PICS;
@@ -48,4 +49,12 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: Interrupt
     unsafe {
         PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
+}
+
+pub extern "x86-interrupt" fn page_fault_interrupt_handler(stack_frame: InterruptStackFrame, error_code: PageFaultErrorCode) {
+    println!("EXCEPTION: PAGE FAULT");
+    println!("Accessed Address: {:?}", Cr2::read());
+    println!("Error Code: {:?}", error_code);
+    println!("{:#?}", stack_frame);
+    crate::kernel::debug::hlt_loop();
 }
