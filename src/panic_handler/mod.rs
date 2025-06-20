@@ -37,7 +37,7 @@ mod test_panic_handler {
     fn panic(_info: &PanicInfo) -> ! {
         serial_println!("[ok]\n");
         exit_qemu(QemuExitCode::Success);
-        hlt_loop()
+        crate::kernel::debug::hlt_loop()
     }
 }
 
