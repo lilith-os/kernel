@@ -5,6 +5,8 @@
 #![test_runner(crate::test_runner::runner)]
 #![reexport_test_harness_main = "test_main"]
 
+extern crate alloc;
+
 mod vga_writer;
 pub mod print;
 pub mod kernel;
@@ -14,6 +16,7 @@ pub mod error;
 mod interrupts;
 mod gdt;
 pub mod memory;
+pub mod allocator;
 
 #[cfg(all(feature = "test", test))]
 crate::test_runner::entry_point!(kernel_test_main);
