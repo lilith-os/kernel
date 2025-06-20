@@ -1,22 +1,26 @@
 use bootloader::BootInfo;
-use x86_64::VirtAddr;
+use x86_64::structures::paging::{OffsetPageTable, Translate};
+use x86_64::{VirtAddr};
 #[allow(unused)]
 use crate::{gdt, println};
 use crate::interrupts::{idt, pic};
-use crate::interrupts::pic::PICS;
-use crate::{debug_call, print};
-use crate::memory::{active_level_4_table, translate_addr};
+use crate::{debug_call, memory};
 
 pub(crate) mod debug;
 
 pub struct Kernel {
     boot_info: &'static BootInfo,
+    mapper: OffsetPageTable<'static>,
 }
 
 impl Kernel {
     pub fn new(boot_info: &'static BootInfo) -> Self {
         Self {
             boot_info,
+            mapper: {
+                let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+                unsafe { memory::init(phys_mem_offset) }
+            }
         }
     }
 
@@ -34,7 +38,6 @@ impl Kernel {
 
         let boot_info = self.boot_info;
         
-        let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
 
         let addresses = [
             // the identity-mapped vga buffer page
@@ -49,7 +52,7 @@ impl Kernel {
 
         for &address in &addresses {
             let virt = VirtAddr::new(address);
-            let phys = unsafe { translate_addr(virt, phys_mem_offset) };
+            let phys = self.mapper.translate_addr(virt);
             println!("{:?} -> {:?}", virt, phys);
         }
 
