@@ -5,7 +5,7 @@ use crate::{gdt, println};
 use crate::interrupts::{idt, pic};
 use crate::interrupts::pic::PICS;
 use crate::{debug_call, print};
-use crate::memory::active_level_4_table;
+use crate::memory::{active_level_4_table, translate_addr};
 
 pub(crate) mod debug;
 
@@ -32,12 +32,25 @@ impl Kernel {
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
 
-        let l4_table = unsafe { active_level_4_table(VirtAddr::new(self.boot_info.physical_memory_offset)) };
+        let boot_info = self.boot_info;
+        
+        let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
 
-        for (i, entry) in l4_table.iter().enumerate() {
-            if !entry.is_unused() {
-                println!("L4 {:?}\n", entry);
-            }
+        let addresses = [
+            // the identity-mapped vga buffer page
+            0xb8000,
+            // some code page
+            0x201008,
+            // some stack page
+            0x0100_0020_1a10,
+            // virtual address mapped to physical address 0
+            boot_info.physical_memory_offset,
+        ];
+
+        for &address in &addresses {
+            let virt = VirtAddr::new(address);
+            let phys = unsafe { translate_addr(virt, phys_mem_offset) };
+            println!("{:?} -> {:?}", virt, phys);
         }
 
         #[allow(clippy::empty_loop)]
