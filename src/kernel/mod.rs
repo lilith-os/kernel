@@ -1,10 +1,11 @@
 use bootloader::BootInfo;
-use x86_64::structures::paging::{OffsetPageTable, Translate};
+use x86_64::structures::paging::{OffsetPageTable, Page, Translate};
 use x86_64::{VirtAddr};
 #[allow(unused)]
 use crate::{gdt, println};
 use crate::interrupts::{idt, pic};
 use crate::{debug_call, memory};
+use crate::memory::{create_example_mapping, EmptyFrameAllocator};
 
 pub(crate) mod debug;
 
@@ -34,27 +35,17 @@ impl Kernel {
     }
     
     #[cfg(not(feature = "test"))]
-    pub fn run(self) -> ! {
+    pub fn run(mut self) -> ! {
 
         let boot_info = self.boot_info;
-        
 
-        let addresses = [
-            // the identity-mapped vga buffer page
-            0xb8000,
-            // some code page
-            0x201008,
-            // some stack page
-            0x0100_0020_1a10,
-            // virtual address mapped to physical address 0
-            boot_info.physical_memory_offset,
-        ];
+        let mut frame_alloc = EmptyFrameAllocator;
 
-        for &address in &addresses {
-            let virt = VirtAddr::new(address);
-            let phys = self.mapper.translate_addr(virt);
-            println!("{:?} -> {:?}", virt, phys);
-        }
+        let page = Page::containing_address(VirtAddr::new(0));
+        create_example_mapping(page, &mut self.mapper, &mut frame_alloc);
+
+        let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
+        unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e) }
 
         #[allow(clippy::empty_loop)]
         loop {
