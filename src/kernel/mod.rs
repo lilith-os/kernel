@@ -1,9 +1,11 @@
 use bootloader::BootInfo;
+use x86_64::VirtAddr;
 #[allow(unused)]
 use crate::{gdt, println};
 use crate::interrupts::{idt, pic};
 use crate::interrupts::pic::PICS;
 use crate::{debug_call, print};
+use crate::memory::active_level_4_table;
 
 pub(crate) mod debug;
 
@@ -30,9 +32,14 @@ impl Kernel {
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
 
-        let ptr = 0xdeadbeaf as *mut u8;
-        unsafe { *ptr = 42; }
-        
+        let l4_table = unsafe { active_level_4_table(VirtAddr::new(self.boot_info.physical_memory_offset)) };
+
+        for (i, entry) in l4_table.iter().enumerate() {
+            if !entry.is_unused() {
+                println!("L4 {:?}\n", entry);
+            }
+        }
+
         #[allow(clippy::empty_loop)]
         loop {
             x86_64::instructions::hlt();

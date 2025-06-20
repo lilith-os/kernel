@@ -13,6 +13,7 @@ pub mod panic_handler;
 pub mod error;
 mod interrupts;
 mod gdt;
+pub mod memory;
 
 #[cfg(all(feature = "test", test))]
 crate::test_runner::entry_point!(kernel_test_main);
