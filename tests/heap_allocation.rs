@@ -10,7 +10,12 @@ use kernel_lib::allocator::heap::HEAP_SIZE;
 
 init_test_entry!();
 
-test_main!(test_allocation, large_vec, many_boxes);
+test_main!(
+    test_allocation,
+    large_vec,
+    many_boxes,
+    long_lived_many_boxes
+);
 
 fn test_allocation() {
     let heap_value = Box::new(41);
@@ -34,4 +39,13 @@ fn many_boxes() {
         let x = Box::new(i);
         assert_eq!(*x, i);
     }
+}
+
+fn long_lived_many_boxes() {
+    let long_lived = Box::new(5);
+    for i in 0..HEAP_SIZE {
+        let x = Box::new(i);
+        assert_eq!(*x, i);
+    }
+    assert_eq!(*long_lived, 5);
 }
