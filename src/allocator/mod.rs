@@ -1,12 +1,22 @@
-use linked_list_allocator::LockedHeap;
-use crate::allocator::bump::{BumpAllocator, Locked};
+use spin::{Mutex, MutexGuard};
+use crate::allocator::fixed_size_block::FixedSizeBlockAllocator;
 
 pub mod heap;
-pub mod bump;
+pub mod fixed_size_block;
 
 #[global_allocator]
-static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
+static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
-fn align_up(addr: usize, align: usize) -> usize {
-    (addr + align - 1) & !(align - 1)
+pub struct Locked<T> {
+    inner: Mutex<T>,
+}
+
+impl<'a, T> Locked<T> {
+    pub const fn new(inner: T) -> Self {
+        Self { inner: Mutex::new(inner) }
+    }
+
+    pub fn lock(&'a self) -> MutexGuard<'a, T> {
+        self.inner.lock()
+    }
 }
