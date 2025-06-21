@@ -10,6 +10,10 @@ use crate::{gdt, println};
 use crate::interrupts::{idt, pic};
 use crate::{allocator, debug_call, memory};
 use crate::memory::{BootInfoFrameAllocator};
+use crate::task::executor::Executor;
+use crate::task::keyboard::print_keypresses;
+use crate::task::simple_executor::SimpleExecutor;
+use crate::task::Task;
 
 pub(crate) mod debug;
 
@@ -46,27 +50,20 @@ impl Kernel {
     
     #[cfg(not(feature = "test"))]
     pub fn run(self) -> ! {
-        let heap_value = Box::new(41);
-        println!("heap_value at {:p}", heap_value);
 
-        // create a dynamically sized vector
-        let mut vec = Vec::new();
-        for i in 0..500 {
-            vec.push(i);
+        async fn async_number() -> u32 {
+            42
         }
-        println!("vec at {:p}", vec.as_slice());
 
-        // create a reference counted vector -> will be freed when count reaches 0
-        let reference_counted = Rc::new(vec![1, 2, 3]);
-        let cloned_reference = reference_counted.clone();
-        println!("current reference count is {}", Rc::strong_count(&cloned_reference));
-        core::mem::drop(reference_counted);
-        println!("reference count is {} now", Rc::strong_count(&cloned_reference));
-
-        #[allow(clippy::empty_loop)]
-        loop {
-            x86_64::instructions::hlt();
+        async fn example_task() {
+            let number = async_number().await;
+            println!("async number: {}", number);
         }
+
+        let mut executor = Executor::new();
+        executor.spawn(Task::new(example_task()));
+        executor.spawn(Task::new(print_keypresses()));
+        executor.run()
     }
     
     #[cfg(feature = "test")]

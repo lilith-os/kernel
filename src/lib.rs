@@ -17,6 +17,7 @@ mod interrupts;
 mod gdt;
 pub mod memory;
 pub mod allocator;
+pub mod task;
 
 #[cfg(all(feature = "test", test))]
 crate::test_runner::entry_point!(kernel_test_main);

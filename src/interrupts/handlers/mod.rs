@@ -5,7 +5,7 @@ use spin::Mutex;
 use x86_64::instructions::port::Port;
 use x86_64::registers::control::Cr2;
 use x86_64::structures::idt::{InterruptStackFrame, PageFaultErrorCode};
-use crate::{print, println};
+use crate::{print, println, task};
 use crate::interrupts::pic::hardware_interrupts::InterruptIndex;
 use crate::interrupts::pic::PICS;
 
@@ -34,17 +34,7 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: Interrupt
 
     let mut port = Port::new(0x60);
     let scancode: u8 = unsafe { port.read() };
-    let mut keyboard = KEYBOARD_DECODER.lock();
-    if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
-        if let Some(key) = keyboard.process_keyevent(key_event) {
-            match key {
-                DecodedKey::RawKey(_) => { },
-                DecodedKey::Unicode(ch) => print!("{}", ch),
-            }
-        }
-    }
-    
-    drop(keyboard);
+    task::keyboard::add_scancode(scancode);
 
     unsafe {
         PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
