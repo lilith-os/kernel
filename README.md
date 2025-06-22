@@ -1,0 +1,2 @@
+This branch based on [Blog OS](https://github.com/phil-opp/blog_os) <br>
+This repository holds a very early and rough version of the kernel. Pretty much everything here is likely to be rewritten many times over
