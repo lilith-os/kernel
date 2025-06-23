@@ -3,7 +3,7 @@ use std::fs::{create_dir_all, remove_file};
 use std::os::windows::fs::symlink_file;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 
 fn main() -> Result<()> {
     let out_dir = PathBuf::from(env::var("OUT_DIR")?);
