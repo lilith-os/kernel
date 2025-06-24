@@ -25,8 +25,8 @@ unsafe extern "C" fn _main() -> ! {
     if let Some(frame_buffer) = frame_buffer.framebuffers().next() {
         let mut term = Terminal::new(frame_buffer);
         //term.grid();
-        write!(term, "Hello World!").unwrap();
-        term.write(format_args!("Hello World!"));
+        write!(term, "Hello World! {} ", 100).unwrap();
+        term.write(format_args!("Hello World! {}", 10));
         term.new_line();
         term.write(format_args!("Bye World!"));
     }

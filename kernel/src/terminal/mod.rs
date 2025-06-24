@@ -66,7 +66,10 @@ impl<'a> Terminal<'a> {
     }
 
     pub fn write(&mut self, args: Arguments) {
-        let string = args.as_str().unwrap();
+        self.write_str(args.as_str().unwrap());
+    }
+
+    pub fn write_str(&mut self, string: &str) {
         Text::with_text_style(
             string,
             Point::new(self.cursor.0 as i32, self.cursor.1 as i32 - 2),
@@ -77,7 +80,7 @@ impl<'a> Terminal<'a> {
 
         self.cursor.0 += string.len() as u64 * self.style.font_width();
     }
-
+    
     pub fn new_line(&mut self) {
         self.cursor = (0, (self.cursor.1 + self.style.font_height()));
     }
@@ -86,7 +89,7 @@ impl<'a> Terminal<'a> {
 impl Write for Terminal<'_> {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         serial_println!("{}", s);
-        self.write(format_args!("{s}"));
+        self.write_str(s);
         Ok(())
     }
 }
