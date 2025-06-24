@@ -1,24 +1,24 @@
 #![no_std]
 #![no_main]
 
-use limine::BaseRevision;
-use limine::request::{RequestsEndMarker, RequestsStartMarker};
+use embedded_graphics::pixelcolor::Rgb888;
+use embedded_graphics::prelude::{DrawTarget, RgbColor};
+use crate::frame_buffer::{Display};
+use crate::limine_requests::{BASE_REVISION, FRAME_BUFFER_REQUEST};
 
-#[used]
-#[unsafe(link_section = ".requests")]
-static BASE_REVISION: BaseRevision = BaseRevision::new();
-
-#[used]
-#[unsafe(link_section = ".requests_start_marker")]
-static _START_MARKER: RequestsStartMarker = RequestsStartMarker::new();
-
-#[used]
-#[unsafe(link_section = ".requests_end_marker")]
-static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
+mod limine_requests;
+mod frame_buffer;
 
 #[unsafe(no_mangle)]
 unsafe extern "C" fn _main() -> ! {
     assert!(BASE_REVISION.is_supported());
+    
+    let frame_buffer = FRAME_BUFFER_REQUEST.get_response().unwrap();
+    if let Some(frame_buffer) = frame_buffer.framebuffers().next() {
+        let mut display = Display::new(frame_buffer);
+        display.clear(Rgb888::MAGENTA).unwrap();
+    }
+    
     hlt_loop()
 }
 
