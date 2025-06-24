@@ -21,7 +21,11 @@ fn main() -> Result<()> {
     qemu.args([
         "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
     ]);
-
+    
+    // qemu.args(
+    //     ["-serial", "stdio"]
+    // );
+    
     // Pass any args to qemu
     env::args().skip(1).for_each(|arg| {
         qemu.arg(arg);

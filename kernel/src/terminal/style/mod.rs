@@ -1,5 +1,5 @@
 use embedded_graphics::mono_font::{MonoFont};
-use embedded_graphics::mono_font::ascii::FONT_6X13;
+use embedded_graphics::mono_font::ascii::{FONT_6X13, FONT_9X15};
 use embedded_graphics::mono_font::iso_8859_16::FONT_7X14;
 use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::prelude::RgbColor;
@@ -24,15 +24,15 @@ impl TerminalStyle<'_> {
             foreground_color: Rgb888::WHITE,
             background_color: Rgb888::BLACK,
             text_style: TextStyle::default(),
-            mono_font: FONT_7X14
+            mono_font: FONT_9X15
         }
     }
     
-    pub fn font_height(&self) -> u64 {
+    pub const fn font_height(&self) -> u64 {
         self.mono_font.character_size.height as u64
     }
     
-    pub fn font_width(&self) -> u64 {
+    pub const fn font_width(&self) -> u64 {
         self.mono_font.character_size.width as u64
     }
     

@@ -13,7 +13,6 @@ use core::fmt::Write;
 use qemu_bindings::exit::{exit_qemu, QemuExitCode};
 
 mod limine_requests;
-
 mod terminal;
 mod frame_buffer;
 
@@ -24,7 +23,7 @@ unsafe extern "C" fn _main() -> ! {
     let frame_buffer = FRAME_BUFFER_REQUEST.get_response().unwrap();
     if let Some(frame_buffer) = frame_buffer.framebuffers().next() {
         let mut term = Terminal::new(frame_buffer);
-        //term.grid();
+        term.grid();
         write!(term, "Hello World! {} ", 100).unwrap();
         term.write(format_args!("Hello World! {}", 10));
         term.new_line();

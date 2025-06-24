@@ -2,7 +2,7 @@ use core::fmt::{Arguments, Write};
 use embedded_graphics::Drawable;
 use embedded_graphics::mono_font::MonoTextStyle;
 use embedded_graphics::pixelcolor::Rgb888;
-use embedded_graphics::prelude::{Point, Primitive, RgbColor};
+use embedded_graphics::prelude::{DrawTarget, Point, Primitive, RgbColor, WebColors};
 use embedded_graphics::primitives::{Line, PrimitiveStyle};
 use embedded_graphics::text::Text;
 use limine::framebuffer::Framebuffer;
@@ -11,6 +11,8 @@ use crate::frame_buffer::Display;
 use crate::terminal::style::TerminalStyle;
 
 mod style;
+
+const GRID_COLOR: Rgb888 = Rgb888::CSS_DARK_ORCHID;
 
 pub struct Terminal<'a> {
     display: Display<'a>,
@@ -52,15 +54,15 @@ impl<'a> Terminal<'a> {
         let f_width =  style.font_width();
         let f_height =  style.font_height();
 
-        for i in 0..rows {
+        for i in 0..rows + 1 {
             Line::new(Point::new(0, (f_height * i) as i32), Point::new(width as i32, (f_height * i) as i32))
-                .into_styled(PrimitiveStyle::with_stroke(Rgb888::RED, 1))
+                .into_styled(PrimitiveStyle::with_stroke(GRID_COLOR, 1))
                 .draw(display).unwrap();
         }
 
-        for i in 0..cols {
+        for i in 0..cols + 1 {
             Line::new(Point::new((f_width * i) as i32, 0), Point::new((f_width * i) as i32, height as i32))
-                .into_styled(PrimitiveStyle::with_stroke(Rgb888::RED, 1))
+                .into_styled(PrimitiveStyle::with_stroke(GRID_COLOR, 1))
                 .draw(display).unwrap();
         }
     }
@@ -80,9 +82,13 @@ impl<'a> Terminal<'a> {
 
         self.cursor.0 += string.len() as u64 * self.style.font_width();
     }
-    
+
     pub fn new_line(&mut self) {
         self.cursor = (0, (self.cursor.1 + self.style.font_height()));
+    }
+    pub fn clear(&mut self) {
+        self.cursor = (0, self.style.font_height());
+        self.display.clear(self.style.bg()).unwrap()
     }
 }
 
