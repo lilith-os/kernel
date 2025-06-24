@@ -18,6 +18,14 @@ fn main() -> Result<()> {
     // For UEFI on qemu, the path to OVMF.fd is needed
     qemu.arg("-bios").arg(PathBuf::from(ovmf).join("OVMF.fd"));
 
+    qemu.args([
+        "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    ]);
+
+    qemu.args(
+        ["-serial", "stdio"]
+    );
+
     // Pass any args to qemu
     env::args().skip(1).for_each(|arg| {
         qemu.arg(arg);

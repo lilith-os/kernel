@@ -8,8 +8,13 @@ use embedded_graphics::primitives::{Circle, PrimitiveStyle, Rectangle, Triangle}
 use uart_16550_driver::serial_println;
 use crate::frame_buffer::{Display};
 use crate::limine_requests::{BASE_REVISION, FRAME_BUFFER_REQUEST};
+use crate::terminal::Terminal;
+use core::fmt::Write;
+use qemu_bindings::exit::{exit_qemu, QemuExitCode};
 
 mod limine_requests;
+
+mod terminal;
 mod frame_buffer;
 
 #[unsafe(no_mangle)]
@@ -18,16 +23,12 @@ unsafe extern "C" fn _main() -> ! {
 
     let frame_buffer = FRAME_BUFFER_REQUEST.get_response().unwrap();
     if let Some(frame_buffer) = frame_buffer.framebuffers().next() {
-        let mut display = Display::new(frame_buffer);
-        Circle::new(Point::new(-100, -100), 500)
-            .into_styled(PrimitiveStyle::with_stroke(Rgb888::WHITE, 5))
-            .draw(&mut display).unwrap();
-        Rectangle::new(Point::new(100, 400), Size::new(300,100))
-            .into_styled(PrimitiveStyle::with_fill(Rgb888::new(84, 16, 188)))
-            .draw(&mut display).unwrap();
-        Triangle::new(Point::new(100, 100), Point::new(200, 400), Point::new(300, 600))
-            .into_styled(PrimitiveStyle::with_fill(Rgb888::CSS_AQUA))
-            .draw(&mut display).unwrap();
+        let mut term = Terminal::new(frame_buffer);
+        //term.grid();
+        write!(term, "Hello World!").unwrap();
+        term.write(format_args!("Hello World!"));
+        term.new_line();
+        term.write(format_args!("Bye World!"));
     }
 
     hlt_loop()
@@ -42,5 +43,6 @@ fn hlt_loop() -> ! {
 #[panic_handler]
 fn panic_handler(_info: &core::panic::PanicInfo) -> ! {
     serial_println!("{}", _info);
+    exit_qemu(QemuExitCode::Failure);
     hlt_loop()
 }
