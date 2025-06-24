@@ -38,6 +38,14 @@ impl<'a> Display<'a> {
             )
         }
     }
+
+    pub fn width(&self) -> u64 {
+        self.frame_buffer.width()
+    }
+
+    pub fn height(&self) -> u64 {
+        self.frame_buffer.height()
+    }
 }
 
 impl Dimensions for Display<'_> {
@@ -85,15 +93,17 @@ impl DrawTarget for Display<'_> {
         let buffer = self.frame_buffer_mut();
         // Draw to the top row
         for x in area.top_left.x..area.top_left.x + area.size.width as i32 {
-            let buffer_position = area.top_left.y as usize * pitch + x as usize * bytes_per_pixel;
-            buffer[buffer_position..buffer_position + bytes_per_pixel].copy_from_slice(&pixel);
+            if let (Ok(x), Ok(y)) = (usize::try_from(x), usize::try_from(area.top_left.y)) {
+                let buffer_position = y * pitch + x * bytes_per_pixel;
+                buffer[buffer_position..buffer_position + bytes_per_pixel].copy_from_slice(&pixel);
+            }
         }
         // Copy the top row to all other rows
         let top_row_start =
-            area.top_left.y as usize * pitch + area.top_left.x as usize * bytes_per_pixel;
+            usize::try_from(area.top_left.y).unwrap_or(0) * pitch + usize::try_from(area.top_left.x).unwrap_or(0) * bytes_per_pixel;
         let top_row = top_row_start..top_row_start + area.size.width as usize * bytes_per_pixel;
         for y in area.top_left.y + 1..area.top_left.y + area.size.height as i32 {
-            let row_start = y as usize * pitch + area.top_left.x as usize * bytes_per_pixel;
+            let row_start = usize::try_from(y).unwrap_or(0) * pitch + usize::try_from(area.top_left.x).unwrap_or(0) * bytes_per_pixel;
             buffer.copy_within(top_row.clone(), row_start);
         }
         Ok(())
