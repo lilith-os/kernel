@@ -1,0 +1,16 @@
+[package]
+name = "kernel"
+version = "0.1.0"
+edition = "2024"
+
+[build-dependencies]
+anyhow = "1.0.98"
+
+[dependencies]
+x86_64 = "0.15.2"
+limine = "0.5.0"
+
+[[bin]]
+name = 'kernel'
+test = false
+bench = false

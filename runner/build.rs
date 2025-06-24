@@ -9,6 +9,7 @@ fn main() -> Result<()> {
     let out_dir = PathBuf::from(env::var("OUT_DIR")?);
     let runner_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR")?);
     let limine_dir = PathBuf::from(env::var("LIMINE_PATH")?);
+    let kernel_executable_file = env::var("CARGO_BIN_FILE_KERNEL")?;
 
     let iso_dir = out_dir.join("iso_root");
     create_dir_all(&iso_dir)?;
@@ -19,6 +20,9 @@ fn main() -> Result<()> {
     let boot_dir = iso_dir.join("boot");
     create_dir_all(&boot_dir)?;
 
+    let kernel_dest = iso_dir.join("kernel");
+    ensure_symlink(&kernel_executable_file, &kernel_dest)?;
+    
     let out_limine_dir = boot_dir.join("limine");
     create_dir_all(&out_limine_dir)?;
 

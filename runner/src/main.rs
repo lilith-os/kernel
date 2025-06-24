@@ -1,12 +1,13 @@
 use std::{env, process};
 use std::path::PathBuf;
 use std::process::Command;
+use anyhow::Result;
 
-fn main() {
-    let iso = env::var("ISO").unwrap();
+fn main() -> Result<()> {
+    let iso = env::var("ISO")?;
     println!("ISO path: {iso:?}");
 
-    let ovmf = env::var("OVMF_PATH").unwrap();
+    let ovmf = env::var("OVMF_PATH")?;
 
     // Qemu runs our OS in a virtual
     let mut qemu = Command::new("qemu-system-x86_64");
@@ -21,6 +22,6 @@ fn main() {
     env::args().skip(1).for_each(|arg| {
         qemu.arg(arg);
     });
-    let exit_status = qemu.status().unwrap();
+    let exit_status = qemu.status()?;
     process::exit(exit_status.code().unwrap_or(1));
 }
