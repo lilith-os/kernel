@@ -1,13 +1,11 @@
 [package]
-name = "kernel"
+name = "lima"
 version = "0.1.0"
 edition = "2024"
 
-[lib]
-name = "kernel_lib"
-
 [workspace]
 resolver = "3"
-members = ['runner']
+members = ['runner', 'kernel']
+default-members = ['runner']
 
 [dependencies]

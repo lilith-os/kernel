@@ -1,0 +1,21 @@
+[package]
+name = "kernel"
+version = "0.1.0"
+edition = "2024"
+
+[build-dependencies]
+anyhow = "1.0.98"
+
+[dependencies]
+x86_64 = "0.15.2"
+limine = "0.5.0"
+embedded-graphics = "0.8.1"
+uart_16550_driver = { git = "https://github.com/lilith-os/uart_16550_driver.git", version = "0.1.1" }
+qemu_bindings = { git = "https://github.com/lilith-os/qemu_bindings.git" }
+log = "0.4.27"
+spin = "0.10.0"
+
+[[bin]]
+name = 'kernel'
+test = false
+bench = false

@@ -1,12 +1,13 @@
 use std::{env, process};
 use std::path::PathBuf;
 use std::process::Command;
+use anyhow::Result;
 
-fn main() {
-    let iso = env::var("ISO").unwrap();
+fn main() -> Result<()> {
+    let iso = env::var("ISO")?;
     println!("ISO path: {iso:?}");
 
-    let ovmf = env::var("OVMF_PATH").unwrap();
+    let ovmf = env::var("OVMF_PATH")?;
 
     // Qemu runs our OS in a virtual
     let mut qemu = Command::new("qemu-system-x86_64");
@@ -17,10 +18,18 @@ fn main() {
     // For UEFI on qemu, the path to OVMF.fd is needed
     qemu.arg("-bios").arg(PathBuf::from(ovmf).join("OVMF.fd"));
 
+    qemu.args([
+        "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    ]);
+    
+    // qemu.args(
+    //     ["-serial", "stdio"]
+    // );
+    
     // Pass any args to qemu
     env::args().skip(1).for_each(|arg| {
         qemu.arg(arg);
     });
-    let exit_status = qemu.status().unwrap();
+    let exit_status = qemu.status()?;
     process::exit(exit_status.code().unwrap_or(1));
 }
